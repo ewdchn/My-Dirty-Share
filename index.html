@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>CNL 06</title>
+		<LINK REL="SHORTCUT ICON" HREF="public/favicon.ico" /> 
+		<meta name="keywords" content="node, nodejs, javascript, p2p, filesharing, webp2p, web peer to peer, p2pweb, open source" />
+		<meta name="description" content="DirtyShare is a proof of concept Peer to Peer filesharing system written in pure Javascript with Socket.io and Node.js." />
+		<link href="public/style.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href='http://fonts.googleapis.com/css?family=Trade+Winds' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Monsieur+La+Doulaise' rel='stylesheet' type='text/css'>
+		<script type="text/javascript"
+		src="http://code.jquery.com/jquery-1.5.2.js"></script>
+		
+		<script src="socket.io/socket.io.js"></script>
+		<script src="public/socket.io.js"></script>
+		<script src="public/FileSaver.js"></script>
+		<script type="text/javascript" src="/public/jquery.url.js"></script>
+	</head>
+	<body>
+		<div id="maskHolder">
+			<div id="loadingScreen">
+				Connecting to Server
+			</div>
+		</div>
+		<div id="roomScreen" class="popupScreen">
+			<tr>
+				<td><a href="#" class="Btns" onclick="createRoom()">createRoom</a></td>
+				<td><a href="#" class="Btns" onclick="loginRoom()">go to existing</a></td>
+			</tr>
+		</div>
+		<div id="roomLogin" class="popupScreen">
+			<table>
+				<tr>
+					<td>RoomName</td>
+					<td>
+						<input type="text" id="rmName">
+					</td>
+				</tr>
+				<tr>
+					<td>RoomPwd(opt)</td>
+					<td>
+						<input type="password" id="rmPass">
+					</td>
+				</tr>
+				
+				<tr>
+				<td colspan="2" class="errorMsg">
+					</td>
+					</tr>
+			</table>
+			<br />
+			<a href="#" class="Btns" onclick="login()">Log in Room</a>
+		</div>
+		<div id="roomCreate" class="popupScreen">
+			<table>
+				<tr>
+					<td>RoomName</td>
+					<td>
+						<input type="text" id="newRmName">
+					</td>
+				</tr>
+				<tr>
+					<td>RoomPwd(opt)</td>
+					<td>
+						<input type="password" id="newRmPass">
+					</td>
+				</tr>
+				<tr>
+				<td colspan="2" class="errorMsg">
+					</td>
+					</tr>
+			</table>
+			<br />
+			<a href="#" class="Btns" onclick="createRmSubmit()">Create Room</a>
+		</div>
+	</div>
+	<div id="header">
+		CNL 06
+	</div>
+	
+	<!-- 	<script type="text/javascript">
+		$(document).ready(function() {
+		filth = 
+		[
+		"\"My God, That\'s Filthy!\"", 
+		"\"You Dirty Bastards!\"", 
+		"\"Sheer And Utter Filth!\"", 
+		"\"What a Shame!\"", 
+		];
+		$('#subheader').html('<i>' + filth[Math.floor(Math.random()*filth.length)] + '</i>');
+		});
+	</script> -->
+	
+	<!-- 	<div id="subheader">
+		</div>
+		
+		<div id="description">
+		This is WebP2P version 0.1, aka 'DirtyShare', a pure JavaScript "peer to peer" filesharing system written in Node.js and Socket.io. Don't use this for anything. What's wrong with you?
+	</div> -->
+	
+	<div id="drop_zone">
+		<div id="clicky"><br /><br /><br /><br />Loading..</div>
+		<div id="fileslist">
+			
+		</div>
+	</div>
+	<div id="infoholder">
+		<a onClick="$('#files').click()" class="Btns" id="uploadBtn">upload</a>
+	</div>
+
+<input type="file" id="files" name="files[]" multiple style="height: 20px; opacity: 0; filter:alpha(opacity: 0);  position: relative; top: -40px; left: -20px;" />
+
+<!-- 	<div id="infoholder">
+	<div id="host">
+	</div>
+	
+	<div id="peer">
+	Awaiting peer..
+	</div>
+	</div>
+	
+	<script type="text/javascript">
+	$(document).ready(function() {
+	//$('#shareurl').html('<b>http://${domain}/' + $.url().segment(1) + '</b>');
+	});
+	</script>
+	
+	<br />
+	<div id="description">
+	Share this URL: <div id="shareurl"></div>
+	</div>
+	
+	<div id="what">
+	<i><a onClick="$('#about').slideDown('slow');">What is this?</a></i>
+</div> -->
+
+<!-- 	<div id="about" style="display: none;">
+	<b>Dirty</b>Share is a proof of concept "Peer to Peer" filesharing system written in <b>pure Javascript</b> with Socket.io and Node.js. It's called <b>Dirty</b>Share because it's dirty as hell across the whole stack, from the concept to the code to the use case. <br/><br/>
+	
+	File transfers in <b>Dirty</b>Share happen from a host client to a peer client, in chunks which go through the webserver over WebSockets provided by Socket.IO. The web server only holds onto the data while it is being received and transmitted through it, so there is <i>no data ever permanently stored on the web server</i>. This makes it perfect for sending dirty pictures!<br/><br/>
+	
+	Ideally, the WebSockets will only be used to establish the P2P connections which will go over the HTML5 PeerConnection object, however, <i>no modern browsers support this feature yet</i>. Hopefully, it will become available within the next 6 months or so, and <b>we will be ready</b> for it !<br /><br />
+	
+	Let's make a purely browser based, ad-free, Free and Open Source private filesharing system! 
+	
+</div> -->
+
+<!-- 	<div id="credits">
+	<b>Dirty</b>Share is written by <b>Rich Jones</b> of <b><a href="http://gun.io" target="_blank">Gun.io</a></b>. <br/><br/>
+	<a href="https://github.com/Miserlou/DirtyShare" target="_blank">Source code</a> is here.<br/> Patches graciously accepted! <br/><br/>
+	Interested in dicussing/hacking on web peer to peer software? Shoot an email to <b>webp2p@librelist.com</b> and you'll be part of the mailing list!
+</div> -->
+
+<!-- 	<div id="lower">
+	<div id="info">
+	</div>
+	
+	<div id="warnings">
+</div> -->
+</center>
+
+<script>
+	/*
+		*********************************
+		SCRIPT STARTS HERE
+		
+		*********************************
+	*/
+	function createRoom(){
+		$('#roomScreen').hide();
+		$('#roomCreate').show();
+	}
+	function loginRoom(){
+		$('#roomScreen').hide();
+		$('#roomLogin').show();
+	}
+	function createRmSubmit(){
+		var rmName = $("input[id='newRmName']").val();
+		console.log(rmName);
+		var rmPass = $("input[id='newRmPass']").val();
+		console.log(rmPass);
+		socket.emit('createRm',rmName,rmPass);
+	}
+	function login(){
+		var rmName = $("input[id='rmName']").val();
+		console.log(rmName);
+		var rmPass = $("input[id='rmPass']").val();
+		socket.emit('loginRm',rmName,rmPass);
+	}
+	/*
+		************************************
+		Socket.IO stuff starting here
+		************************************
+	*/
+	var myID;
+	var fileList;
+	var files = {};
+	var downfiles = {};
+	var timer =[];
+	var socket = io.connect('http://${domain}');
+	//read the requested bytes
+	var reader;
+	if(typeof(Storage)=="undefined"){
+		alert('this page requires sessionstorage to run');
+	}
+	if (typeof FileReader !== "undefined"){
+		reader = new FileReader();
+	}
+	else{
+		$('#clicky').html('<br /><br />Your browser is not modern enough to serve as a host. :( <br /><br />(Try Chrome or Firefox!)');
+	}
+	var chunksize = 256*1024;
+	
+	socket.on('connect', function(data){
+		$('#loadingScreen').hide();
+		$('#roomScreen').show();
+		console.log(socket.id);
+		//socket.emit('joiner');	
+	});
+	socket.on('occupied',function(){
+		$('.errorMsg').html('Error: room exists');
+	});
+	socket.on('wrongPass',function(){
+				$('.errorMsg').html('Error: password incorrect');
+	});
+	socket.on('notFound',function(){
+				$('.errorMsg').html('Error: Room Not Found');
+	});	
+	socket.on('yourID', function(data){
+		myID=String(data);
+		console.log(myID,typeof(myID));
+		$('#maskHolder').hide();
+		$('#roomLogin').hide();
+		$('#roomCreate').hide();
+	});
+	socket.on('refreshFileList', function(data){
+		console.log("incoming data");
+		$('#fileslist').show();
+		$('#clicky').html('');
+		$('#clicky').hide();
+		$('#fileslist').html('');
+		$('#fileslist').html(function(i,v){
+			return '<table id="filestable" cellspacing="0" summary=""><tr><th scope="col" abbr="Filename" class="nobg" width="60%">Filename</th><th scope="col" abbr="Status" width="20%" >Size</th> <th scope="col" abbr="Size"width="20%" >Action</th></tr>' + v;
+		});
+		
+		fileList = JSON.parse(data);
+		console.log(fileList.length);
+		console.log(fileList);
+		for (var fID in fileList) {
+			file = fileList[fID];
+			if(!file)continue;
+			if(fileList[fID].srcID==myID)
+			{
+				//$('#filestable').append('<tr id="entry' + fID+ '"><th scope="row" class="spec">' + file.name + '</th><td>' + file.size + '</td><td class="end" ><div id="fidspan' + fID + '"></div>Transfer<a href="data:' + file.type + ';base64," target="_blank" id="fidsave' + fID + '" style="display:none">Save to disk!</a></td></tr>');
+				$('#filestable').append('<tr id="entry' + fID+ '"><th scope="row" class="spec">' + file.name + '</th><td>' + file.size + '</td><td class="end" ><div id="fidspan' + fID + '"></div>Transfer</td></tr>');				
+			}
+			else
+			{
+				$('#filestable').append('<tr id="entry' + fID+ '"><th scope="row" class="spec">' + file.name + '</th><td>' + file.size + '</td><td class="end" ><div id="fidspan' + fID + '"></div><a href="" onclick="requestChunk(\'' + file.name + '\', ' + fID + ', ' + file.size + '); return false;" id="fid' + fID + '">Transfer</a><a href="#" onClick="saveFile('+fID+')" id="fidsave' + fID + '" style="display:none">Save to disk!</a></td></tr>');
+			}
+			
+		}
+	});
+	
+	
+	
+	socket.on('peerDisconnected', function(clientID){
+		cID = String(clientID);
+		for (var fID in fileList) {
+			var fspan = "#entry"+fID;
+			console.log('fspan',fspan);
+			if(!fileList[fID])continue;
+			if(fileList[fID].srcID==cID){
+				$(fspan).hide(500);
+				fileList[fID]=null;
+			}
+		}
+		console.log(fileList);
+	});
+	
+	/*
+		***************
+		CHUNK  REQUEST
+		***************
+	*/
+	socket.on('chunkRequest', function(fid, chunkNo,rcpID){
+		if(chunkNo == 0){
+			$('#info').append("Begining Transfer..");
+		}
+		fname = fileList[fid].name;
+		fileholder= files[fname];
+		fileo= fileholder.f; //ugly
+		console.log("transfer");
+		console.log(fileo);
+		start = chunkNo * chunksize;
+		
+		if((parseInt(fileholder.size) - 1) <= start + chunksize - 1){
+			stop = parseInt(fileholder.size) - 1;
+		}
+		else{
+			stop = start + chunksize - 1;
+		}
+		
+		// If we use onloadend, we need to check the readyState.
+		reader.onloadend = function(evt) {
+			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+				console.log("sending chunk");
+				var data = evt.target.result;
+				socket.emit('chunkTransfer', data, fid, chunkNo+1,rcpID);
+			}
+		};
+		
+		if (fileo.slice) {
+			var blob = fileo.slice(start, stop + 1);
+			} else if (fileo.mozSlice) {
+			var blob = fileo.mozSlice(start, stop + 1);
+		}
+		else if(fileo.webkitSlice){
+			var blob = fileo.webkitSlice(start,stop+1);
+		}
+		else{
+			alert("It won't work in your browser. Please use Chrome or Firefox.");
+		}
+		reader.readAsBinaryString(blob);
+	});
+	
+	/*
+		**********************
+		CHUNK  TRANSFER
+		***********************
+	*/
+	socket.on('chunkTransfer', function(data, fid, chunk){
+		clearTimeout(timer[fid]);
+		//console.log(downfiles[fid]);
+		f = downfiles[fid];
+			var fspan = "#fidspan" + f.fid;
+			var fsave = "#fidsave" + f.fid;
+		f.data = f.data + data;
+		//console.log(chunk);
+		//console.log(f.chunks);
+		if(f.chunks == chunk){
+			console.log("finished");
+			//$(fsave).attr('href',$(fsave).attr('href')+btoa(f.data));
+			//window.sessionStorage[fid]="data:"+allFiles['fileList'][fid].type+";base64,"+btoa(f.data);
+			//window.sessionStorage[fid]="data:application/octet-stream;base64,"+btoa(f.data);
+			console.log("saved");
+			
+			$(fspan).html('');
+			$(fspan).hide();
+			$(fsave).show();	
+		}
+		else{
+			console.log("next CHUNK");
+			var fspan = "#fidspan" + f.fid;
+			$(fspan).html(Math.floor(((chunk/f.chunks) * 100)) + '%');
+			var nextchunk = parseInt(chunk);
+			socket.emit('chunkRequest', fid, nextchunk,myID);
+			timer[fid]=window.setTimeout("resend("+fid+","+nextchunk+")",1200);
+		}
+	});
+	
+function saveFile(fID){
+var f = downfiles[fID];
+var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+var Android = ( navigator.userAgent.match(/(Android)/g) ? true : false );
+if(iOS){
+var dataURL = "data:" + file.type + ";base64,"+btoa(f.data);
+	window.open(dataURL);
+}
+else {
+var binary = downfiles[fID].data;
+var array =[];
+for(var i = 0; i < binary.length; i++) {
+array.push(binary.charCodeAt(i));
+}
+var bb= new Blob([new Uint8Array(array)],{"type":downfiles[fID].type});
+saveAs(bb,f.name);
+}
+}
+	/*
+		**********************
+		START TRANSFER
+		**********************
+	*/
+	function requestChunk(file, fid, size){
+		if(!fileList[fid])return;
+		console.log(file,fid,size);
+		var f = "#fidspan" + fid;
+		$(f).html('0%');
+		f = "#fid" + fid;
+		$(f).hide();
+		
+		var chunks = size/chunksize;
+		if(chunks% 1 != 0){
+			chunks = Math.floor(chunks) + 1;
+		}
+		
+		downfiles[fid] = {data:'', chunk:0, chunks:chunks, fid:fid,name:fileList[fid].name,type:fileList[fid].type};
+		console.log(downfiles[fid]);
+		socket.emit('chunkRequest', fid, 0, myID);
+		timer[fid]=window.setTimeout("resend("+fid+",0)",1200);
+	};
+	function resend(fid,chunk){
+
+		socket.emit('chunkRequest',fid,chunk,myID);
+		timer[fid]=window.setTimeout("resend("+fid+","+chunk+")",1200);
+	}
+	
+	/*
+		*****************
+		FILE ENTRY OBJECT
+		*****************
+	*/
+	function fileEntry(f){
+		this.srcID=myID;
+		console.log(this.srcID,typeof(this.srcID));
+		this.name=f.name;
+		this.size=f.size;
+		this.type=f.type;
+		this.f=f;
+		return this;
+	}
+	
+	/*
+		*********************
+		FILE SELECT
+		*********************
+	*/
+	function handleFileSelect(evt) {
+		console.log("file select");	
+		var newFiles={};
+		// Loop through the FileList and append files to list.
+		var viles = evt.target.files; // FileList object
+		//console.log(viles);
+		// Loop through the FileList and append files to list.
+		for (var i = 0, f; f = viles[i]; i++) {
+			if (!files.hasOwnProperty(f)) {
+				files[f.name] =  new fileEntry(f);
+				newFiles[f.name] = new fileEntry(f);
+			};
+		}
+		console.log(files);
+		socket.emit('listfiles', JSON.stringify(newFiles));
+		
+	};
+	
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+	
+</script>
+
+</body>
+</html>
